@@ -1,5 +1,6 @@
 package chat_server;
 
+import java.util.HashMap;
 import java.net.*;
 import java.io.*;
 
@@ -32,33 +33,89 @@ public class Chat_server implements Runnable {
 
                 while (!exit) {
                     try {
+                        socket.getOutputStream();
+                        streamOut = new DataOutputStream(socket.getOutputStream());
 
                         streamIn = new DataInputStream(socket.getInputStream());
                         BufferedReader d = new BufferedReader(new InputStreamReader(streamIn));
                         String strInput = d.readLine();
 
-                        if (strInput.equals("HELO BASE_TEST")) {
-                            
-                            System.out.println("inside run 1 =" + strInput);
-                            socket.getOutputStream();
-                            streamOut = new DataOutputStream(socket.getOutputStream());
-                            String strWelcome = strInput + "\nIP:10.62.0.81\nPort:8001\nStudentID:17317640\n";
-                            streamOut.writeUTF(strWelcome);
+                        String[] strPayloadParts = strInput.split("\n");
+
+                        String strWelcome = "HELO BASE_TEST";
+                        String strJoin = "JOIN_CHATROOM";
+                        String strLeaveRoom = "LEAVE_CHATROOM";
+                        String strChat = "CHAT";
+                        String strDisconnect = "DISCONNECT";
+
+                        HashMap<String, String> hmPayload = new HashMap<String, String>();
+
+                        for (int i = 0; i <= (strPayloadParts.length); i++) {
+                            String[] strKeyValues = strPayloadParts[i].split(":");
+                            hmPayload.put(strKeyValues[0], strKeyValues[1]);
+                        }
+
+                        String strKey = strInput.substring(0, strInput.indexOf(':'));
+
+                        if (strKey.equals(strWelcome)) {
+
+                            System.out.println("inside strWelcome =" + strInput);
+                            String strReply = strInput + "\nIP:10.62.0.81\nPort:8001\nStudentID:17317640\n";
+                            streamOut.writeUTF(strReply);
                             streamOut.flush();
 
-                        } else if (strInput.equals("KILL_SERVICE"))
-                        {   
-                            exit=true;
-                            close();
-                        }
-                        else
-                        {
-                            //Joinchatroom
-                            //Leavechatroom
-                            //Message
+                        } else if (strKey.equals(strJoin)) {
+
+                            //call Join function
+                            String strRoomNo = "";
+                            String strJoinId = "";
+                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
+                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
+                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            streamOut.writeUTF(strReply);
+                            streamOut.flush();
+
+                        } else if (strKey.equals(strLeaveRoom)) {
+
+                            //call Leave Room Function
+                            String strRoomNo = "";
+                            String strJoinId = "";
+                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
+                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
+                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            streamOut.writeUTF(strReply);
+                            streamOut.flush();
+
+                        } else if (strKey.equals(strChat)) {
+
+                            //Call Chat function
+                            String strRoomNo = "";
+                            String strJoinId = "";
+                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
+                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
+                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            streamOut.writeUTF(strReply);
+                            streamOut.flush();
+
+                        } else if (strKey.equals(strDisconnect)) {
+
+                            //Call Disconnect function
+                            String strRoomNo = "";
+                            String strJoinId = "";
+                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
+                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
+                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            streamOut.writeUTF(strReply);
+                            streamOut.flush();
+
+                        } else {
+                            String strReply = "Invalid message";
+                            streamOut.writeUTF(strReply);
+                            streamOut.flush();
                         }
 
                     } catch (IOException ex) {
+                        System.out.println("Error:" + ex);
                         exit = true;
                     }
                 }
