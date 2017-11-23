@@ -3,86 +3,92 @@ package chat_server;
 import java.net.*;
 import java.io.*;
 
-public class Chat_server implements Runnable 
-{
+public class Chat_server implements Runnable {
+
     private Socket socket = null;
     private ServerSocket server = null;
     private DataInputStream streamIn = null;
+    private DataOutputStream streamOut = null;
     private Thread thread = null;
 
-    public Chat_server(int port) 
-    {
-        try 
-        {
+    public Chat_server(int port) {
+        try {
             server = new ServerSocket(port);
             System.out.println("Server is up on port: " + port);
-            System.out.println("version 1 ");
+            System.out.println("version 3 ");
             start();
-        } 
-        catch (IOException ex) 
-        {
+        } catch (IOException ex) {
             System.out.println("Error: " + ex);
         }
     }
 
-    public void run() 
-    {
-        while (thread != null) 
-        {
-            try 
-            {
+    public void run() {
+        while (thread != null) {
+            try {
                 socket = server.accept();
-                System.out.println("1Client accepted: " + socket.getInputStream());
-                streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                System.out.println("Client accepted: " + socket);
+
                 boolean exit = false;
-                
-                while (!exit) 
-                {
-                    try 
-                    {
-                        String line = streamIn.readUTF();
-                        System.out.println("@@@@@@@@@@@@");
-                        System.out.println(line);
-                        //exit = line.equals("KILL_SERVICE\n");
-                    } 
-                    catch (IOException ex) 
-                    {
+
+                while (!exit) {
+                    try {
+
+                        streamIn = new DataInputStream(socket.getInputStream());
+                        BufferedReader d = new BufferedReader(new InputStreamReader(streamIn));
+                        String strInput = d.readLine();
+
+                        if (strInput.equals("HELO BASE_TEST")) {
+                            
+                            System.out.println("inside run 1 =" + strInput);
+                            socket.getOutputStream();
+                            streamOut = new DataOutputStream(socket.getOutputStream());
+                            String strWelcome = strInput + "\nIP:10.62.0.81\nPort:8001\nStudentID:17317640\n";
+                            streamOut.writeUTF(strWelcome);
+                            streamOut.flush();
+
+                        } else if (strInput.equals("KILL_SERVICE"))
+                        {   
+                            exit=true;
+                            close();
+                        }
+                        else
+                        {
+                            //Joinchatroom
+                            //Leavechatroom
+                            //Message
+                        }
+
+                    } catch (IOException ex) {
                         exit = true;
                     }
                 }
-                
+
                 close();
-            } 
-            catch (IOException ie) 
-            {
+            } catch (IOException ie) {
                 System.out.println("Error: " + ie);
             }
         }
     }
 
-    public void start() 
-    {
-        if (thread == null) 
-        {
+    public void start() {
+        System.out.println("INnside start1");
+        if (thread == null) {
+            System.out.println("INnside start2");
             thread = new Thread(this);
             thread.start();
         }
     }
 
-    public void close() throws IOException 
-    {
-        if (socket != null) 
-        {
+    public void close() throws IOException {
+        if (socket != null) {
             socket.close();
         }
-        if (streamIn != null) 
-        {
+        if (streamIn != null) {
             streamIn.close();
         }
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         Chat_server server = new Chat_server(8001);
     }
 }
