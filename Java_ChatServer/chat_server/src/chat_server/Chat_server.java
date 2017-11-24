@@ -1,6 +1,6 @@
 package chat_server;
 
-import java.util.HashMap;
+import java.util.*;
 import java.net.*;
 import java.io.*;
 
@@ -11,6 +11,8 @@ public class Chat_server implements Runnable {
     private DataInputStream streamIn = null;
     private DataOutputStream streamOut = null;
     private Thread thread = null;
+    //public static ArrayList<Socket> ClientConnections = new ArrayList<Sockets>();
+    //public static ArrayList<String> UserList = new ArrayList<String>();
 
     public Chat_server(int port) {
         try {
@@ -27,6 +29,8 @@ public class Chat_server implements Runnable {
         while (thread != null) {
             try {
                 socket = server.accept();
+                //addClientToList(socket);
+                //ClientConnections.add(socket);
                 System.out.println("Client accepted: " + socket);
 
                 boolean exit = false;
@@ -80,9 +84,7 @@ public class Chat_server implements Runnable {
                             //call Leave Room Function
                             String strRoomNo = "";
                             String strJoinId = "";
-                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
-                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
-                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            String strReply = " LEFT_CHATROOM:" + strRoomNo + "\nJOIN_ID:" + strJoinId + "\n";
                             streamOut.writeUTF(strReply);
                             streamOut.flush();
 
@@ -90,26 +92,22 @@ public class Chat_server implements Runnable {
 
                             //Call Chat function
                             String strRoomNo = "";
-                            String strJoinId = "";
-                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
-                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
-                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            String strClientName = "";
+                            String strMessage = "";
+                            String strReply = "CHAT:" + strRoomNo + "\nCLIENT_NAME="
+                                    + strClientName + "\nMESSAGE=" + strMessage + "\n\n";
                             streamOut.writeUTF(strReply);
                             streamOut.flush();
 
                         } else if (strKey.equals(strDisconnect)) {
 
                             //Call Disconnect function
-                            String strRoomNo = "";
-                            String strJoinId = "";
-                            String strReply = "JOINED_CHATROOM:" + hmPayload.get("JOIN_CHATROOM")
-                                    + "\nSERVER_IP:10.62.0.81\nPORT:8001\nROOM_REF:" + strRoomNo
-                                    + "\nJOIN_ID:" + strJoinId + "\n";
+                            String strReply = "adios";
                             streamOut.writeUTF(strReply);
                             streamOut.flush();
 
                         } else {
-                            String strReply = "Invalid message";
+                            String strReply = "ERROR_CODE:200\nERROR_DESCRIPTION:Invalid Message";
                             streamOut.writeUTF(strReply);
                             streamOut.flush();
                         }
@@ -126,6 +124,19 @@ public class Chat_server implements Runnable {
             }
         }
     }
+    
+    //public void synchronised Welcome(Socket S){}
+    //public void synchronised Join(Socket S){}
+    //public void synchronised Leave(Socket S){}
+    //public void synchronised Chat(Socket S){}
+    //public void synchronised Disconnect(Socket S){}
+
+//    public static void synchronised AddClientToList(Socket S) {
+//
+//        DataInputStream objClientData = new DataInputStream(S.getInputStream());
+//        BufferedReader d = new BufferedReader(new InputStreamReader(objClientData));
+//        String strInput = d.readLine();
+//    }
 
     public void start() {
         System.out.println("INnside start1");
