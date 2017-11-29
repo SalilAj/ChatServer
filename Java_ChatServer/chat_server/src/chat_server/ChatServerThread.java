@@ -1,56 +1,44 @@
 package chat_server;
+
 import java.net.*;
 import java.io.*;
 
-public class ChatServerThread extends Thread
-{  private Chat_server       server    = null;
-   private Socket           socket    = null;
-   private int              ID        = -1;
-   private DataInputStream  streamIn  =  null;
-   private DataOutputStream streamOut = null;
+public class ChatServerThread implements Runnable {
 
-   public ChatServerThread(Chat_server _server, Socket _socket)
-   {  super();
-      server = _server;
-      socket = _socket;
-      ID     = socket.getPort();
-   }
-   public void send(String msg)
-     {   try
-       {  streamOut.writeUTF(msg);
-          streamOut.flush();
-       }
-       catch(IOException ioe)
-       {  System.out.println(ID + " ERROR sending: " + ioe.getMessage());
-          server.remove(ID);
-          stop();
-       }
-   }
-   public int getID()
-   {  return ID;
-   }
-   public void run()
-   {  System.out.println("Server Thread " + ID + " running.");
-      while (true)
-      {  try
-         {  server.handle(ID, streamIn.readUTF());
-         }
-         catch(IOException ioe)
-         {  System.out.println(ID + " ERROR reading: " + ioe.getMessage());
-            server.remove(ID);
-            stop();
-         }
-      }
-   }
-   public void open() throws IOException
-   {  streamIn = new DataInputStream(new 
-                        BufferedInputStream(socket.getInputStream()));
-      streamOut = new DataOutputStream(new
-                        BufferedOutputStream(socket.getOutputStream()));
-   }
-   public void close() throws IOException
-   {  if (socket != null)    socket.close();
-      if (streamIn != null)  streamIn.close();
-      if (streamOut != null) streamOut.close();
-   }
+//    private DataInputStream dtInput = null;
+//    private DataOutputStream dtOutput = null;
+//    private Socket socket = null;
+//    private Chat_server server = null;
+//    private Integer intIP = 0;
+//    private Thread thread = null;
+//
+//    public ChatServerThread(Chat_server objServer, Socket objSocket) {
+//        server = objServer;
+//        socket = objSocket;
+//        intIP = objSocket.getPort();
+//    }
+//
+//    public void open() {
+//        dtInput = new DataInputStream(socket.getInputStream());
+//        dtOutput = new DataOutputStream(socket.getOutputStream());
+//    }
+//
+//    public void start() {
+//        if (thread == null) {
+//            thread = new Thread(this);
+//            thread.start();
+//        }
+//    }
+
+    public void run() {
+        while (true) {
+            try {
+                
+            }
+            catch(Exception Ex)
+            {
+                
+            }
+        }
+    }
 }
